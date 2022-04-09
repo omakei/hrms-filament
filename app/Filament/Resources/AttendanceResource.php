@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\AttendancesExport;
 use App\Filament\Resources\AttendanceResource\Pages;
 use App\Filament\Resources\AttendanceResource\RelationManagers;
 use App\Models\Attendance;
@@ -13,6 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Excel;
+use pxlrbt\FilamentExcel\Actions\ExportAction;
 
 class AttendanceResource extends Resource
 {
@@ -79,10 +82,17 @@ class AttendanceResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
+            ->pushBulkActions([
+                ExportAction::make('export')
+                    ->icon('heroicon-o-document-download')
+                    ->label('Export Data') // Button label
+                    ->withExportable(AttendancesExport::class)
+            ])
             ->filters([
-                Tables\Filters\Filter::make('created_at')
+                Tables\Filters\Filter::make('recorded_at')
                     ->form([
                         Forms\Components\DatePicker::make('recorded_at')
+                            ->default(now())
                             ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
 
                     ])

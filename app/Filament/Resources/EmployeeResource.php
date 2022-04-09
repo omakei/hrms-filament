@@ -12,6 +12,9 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Excel;
+use pxlrbt\FilamentExcel\Actions\ExportAction;
 
 class EmployeeResource extends Resource
 {
@@ -77,7 +80,7 @@ class EmployeeResource extends Resource
                 Forms\Components\TextInput::make('reference_phone_2')
                     ->tel()
                     ->maxLength(255),
-                Forms\Components\Select::make('marital status')
+                Forms\Components\Select::make('marital_status')
                     ->required()
                     ->options([
                         'married' => 'Married',
@@ -99,18 +102,61 @@ class EmployeeResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('avatar')->collection('avatars')->conversion('thumb'),
-                Tables\Columns\TextColumn::make('full_name'),
+                SpatieMediaLibraryImageColumn::make('avatar')
+                    ->collection('avatars')
+                    ->conversion('thumb')->rounded(),
+                Tables\Columns\TextColumn::make('full_name')
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable()
+                ,
                 Tables\Columns\TextColumn::make('dob')
                     ->date(),
                 Tables\Columns\TextColumn::make('gender'),
                 Tables\Columns\TextColumn::make('nationality'),
-                Tables\Columns\TextColumn::make('marital status'),
+                Tables\Columns\TextColumn::make('marital_status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
+            ->pushBulkActions([
+                ExportAction::make('export')
+                    ->icon('heroicon-o-document-download')
+                    ->label('Export Data') // Button label
+                    ->withWriterType(Excel::CSV) // Export type: CSV, XLS, XLSX
+                    ->except('updated_at') // Exclude fields
+                    ->withFilename('employee list') // Set a filename
+                    ->withHeadings() // Get headings from table or form
+                    ->askForFilename(date('Y-m-d') . '-export') // Let the user choose a filename. You may pass a default.
+                    ->askForWriterType(Excel::XLS)  // Let the user choose an export type. You may pass a default.
+                    ->allFields() // Export all fields on model,
+            ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('recorded_at')
+                            ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
+
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['recorded_at'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('recorded_at', '=', $date),
+                            );
+                    }),
+                Tables\Filters\Filter::make('marital status')
+                ->form([
+                    Forms\Components\Select::make('marital_status')
+                        ->options([
+                            'married' => 'Married',
+                            'single' => 'Single'
+                        ])
+                ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['marital_status'],
+                                fn (Builder $query, $value): Builder => $query->where('marital_status', '=', $value),
+                            );
+                    })
             ]);
     }
 
