@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('reference_phone_1');
             $table->string('reference_name_2');
             $table->string('reference_phone_2')->nullable();
-            $table->string('marital status');
+            $table->string('marital_status');
             $table->text('comment');
             $table->timestamps();
         });
