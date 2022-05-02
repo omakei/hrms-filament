@@ -32,6 +32,6 @@ class PayRoll extends Model
 
     public function pay_scale(): BelongsTo
     {
-        return $this->belongsTo(SalaryType::class);
+        return $this->belongsTo(PayScale::class);
     }
 }

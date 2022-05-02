@@ -38,7 +38,7 @@ class EmployeeResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('dob')
-                    ->default(now())
+                    ->default(now()->subYears(18))
                     ->withoutTime()
                     ->required(),
                 Forms\Components\Select::make('gender')

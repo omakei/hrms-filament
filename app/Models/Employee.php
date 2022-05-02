@@ -46,4 +46,25 @@ class Employee extends Model implements HasMedia
             get: fn ($value, $attributes) => $attributes['first_name'].' '.$attributes['middle_name'].' '.$attributes['last_name'],
         );
     }
+
+    protected function EmployeeNumber(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => (EmployeeCompanyDetail::where('employee_id', $attributes['id'])->orderBy('created_at','DESC')->first())?->employee_number ,
+        );
+    }
+
+    protected function Department(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => (EmployeeCompanyDetail::where('employee_id', $attributes['id'])->orderBy('created_at','DESC')->first())?->department->name ,
+        );
+    }
+
+    protected function Status(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => (EmployeeCompanyDetail::where('employee_id', $attributes['id'])->orderBy('created_at','DESC')->first())?->status ,
+        );
+    }
 }

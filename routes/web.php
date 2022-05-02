@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,10 @@ use Illuminate\Support\Facades\Route;
 //Route::get('/', function () {
 //    return view('welcome');
 //});
+
+Route::get('download-payslip/{payroll}', [ReportController::class, 'payslip'])
+    ->name('payslip.download');
+//Route::get('download-referral/{referral}', [ReportController::class, 'referral'])
+//    ->name('referral.download');
+//Route::get('download-prescription/{prescription}', [ReportController::class, 'prescription'])
+//    ->name('prescription.download');

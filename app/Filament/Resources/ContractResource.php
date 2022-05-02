@@ -53,6 +53,7 @@ class ContractResource extends Resource
                         'terminate_contract' => 'Terminate Contract',
                     ]),
                 Forms\Components\Select::make('department_id')
+                    ->required()
                     ->label('Department')
                     ->options(Department::all()->pluck('name', 'id'))
                     ->searchable(),
@@ -61,6 +62,7 @@ class ContractResource extends Resource
                     ->options(Employee::all()->pluck('first_name', 'id'))
                     ->searchable(),
                 Forms\Components\Select::make('shift_id')
+                    ->required()
                     ->label('Shift')
                     ->options(Shift::all()->pluck('name', 'id'))
                     ->searchable(),

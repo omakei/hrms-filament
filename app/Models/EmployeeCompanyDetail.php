@@ -18,4 +18,10 @@ class EmployeeCompanyDetail extends Model implements HasMedia
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
+
 }

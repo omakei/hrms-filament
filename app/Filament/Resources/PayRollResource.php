@@ -38,9 +38,11 @@ class PayRollResource extends Resource
                     ->options(PayScale::all()->pluck('name', 'id'))
                     ->required(),
                 Forms\Components\Select::make('year')
+                    ->default(now()->year)
                     ->options(array_combine(range(date("Y"), 2010), range(date("Y"), 2010)))
                     ->required(),
                 Forms\Components\Select::make('month')
+                    ->default(strtolower(now()->monthName))
                     ->options([
                         'january' => 'January',
                         'february' => 'February',
@@ -87,6 +89,12 @@ class PayRollResource extends Resource
                     ->label('Payment Status')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
+            ])
+            ->prependActions([
+                Tables\Actions\LinkAction::make('payslip')
+                    ->url(fn ($record) => route('payslip.download', $record->id))
+                    ->icon('heroicon-o-download')
+                    ->color('primary'),
             ])
             ->filters([
                 //

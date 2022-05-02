@@ -27,6 +27,7 @@ class LeaveTypeResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('credit_type')
+                    ->label('Duration Type')
                     ->options([
                         'day' => 'Day',
                         'week' => 'Week',
@@ -34,6 +35,7 @@ class LeaveTypeResource extends Resource
                         'year' => 'Year',
                     ])->required(),
                 Forms\Components\TextInput::make('credit_leaves')
+                    ->label('Duration Length')
                     ->numeric()
                     ->required()
                     ->maxLength(255),
@@ -47,8 +49,8 @@ class LeaveTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('credit_type'),
-                Tables\Columns\TextColumn::make('credit_leaves'),
+                Tables\Columns\TextColumn::make('credit_type')->label('Duration Type'),
+                Tables\Columns\TextColumn::make('credit_leaves')->label('Duration length'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')
