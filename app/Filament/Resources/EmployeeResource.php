@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\Employee;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
@@ -94,7 +95,10 @@ class EmployeeResource extends Resource
                     ->multiple()
                     ->minFiles(1)
                     ->maxFiles(5),
-
+                Forms\Components\Select::make('user_id')
+                    ->label('user account')
+                    ->required()
+                    ->options(User::all()->pluck('name', 'id')),
             ]);
     }
 

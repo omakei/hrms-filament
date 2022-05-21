@@ -13,7 +13,11 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\LinkAction;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Excel;
 use pxlrbt\FilamentExcel\Actions\ExportAction;
 
@@ -29,20 +33,32 @@ class AttendanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('employee_id')
-                    ->options(Employee::all()->pluck('full_name', 'id'))
-                    ->required(),
+                auth()->user()->hasRole('employee')?
+                    Forms\Components\Hidden::make('employee_id')
+                        ->default((Employee::firstWhere('user_id', auth()->user()->id))->id)
+                        ->label('employee')
+                        ->required():
+                    Forms\Components\Select::make('employee_id')
+                        ->label('employee')
+                        ->options(Employee::all()->pluck('full_name','id'))
+                        ->required(),
                 Forms\Components\Hidden::make('recorded_by')
                     ->default(auth()->user()->id)
                     ->required(),
                 Forms\Components\Select::make('shift_id')
+                    ->label('shift')
                     ->options(Shift::all()->pluck('name', 'id'))
                     ->required(),
                 Forms\Components\TimePicker::make('time_id')
+                    ->label('Time in')
                     ->default(now()),
                 Forms\Components\TimePicker::make('time_out')
                     ->default(now()),
-                Forms\Components\Select::make('status')
+                auth()->user()->hasRole('employee')?
+                    Forms\Components\Hidden::make('status')
+                        ->required()
+                        ->default('present'):
+                    Forms\Components\Select::make('status')
                     ->required()
                     ->default('present')
                     ->options([
@@ -50,6 +66,13 @@ class AttendanceResource extends Resource
                         'present' => 'Present',
                         'absent' => 'Absent',
                     ]),
+                auth()->user()->hasRole('employee')?
+                    Forms\Components\Hidden::make('is_confirmed')
+                        ->required()
+                        ->default(false):
+                    Forms\Components\Toggle::make('is_confirmed')
+                        ->required()
+                        ,
                 Forms\Components\DateTimePicker::make('recorded_at')
                     ->default(now())
                     ->disabled()
@@ -60,6 +83,8 @@ class AttendanceResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\BooleanColumn::make('is_confirmed')
+                    ->label('confirmed'),
                 Tables\Columns\TextColumn::make('employee.full_name')
                     ->searchable()
                     ->sortable(),
@@ -83,10 +108,10 @@ class AttendanceResource extends Resource
                     ->dateTime(),
             ])
             ->pushBulkActions([
-                ExportAction::make('export')
+                BulkAction::make('export')
+                    ->action(fn (Collection $records) => redirect(route('attendance.download')))
                     ->icon('heroicon-o-document-download')
-                    ->label('Export Data') // Button label
-                    ->withExportable(AttendancesExport::class)
+                    ->label('Export Data')
             ])
             ->filters([
                 Tables\Filters\Filter::make('recorded_at')
@@ -100,7 +125,7 @@ class AttendanceResource extends Resource
                         return $query
                             ->when(
                                 $data['recorded_at'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('recorded_at', '=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('recorded_at', '>=', $date),
                             );
                     }),
             ]);

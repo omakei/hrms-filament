@@ -14,19 +14,20 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class AttendancesExport implements FromQuery, WithMapping
+class PerformancesExport implements FromQuery, WithMapping
 {
 
 
     public function map($row): array
     {
+
         return $row;
     }
 
     public function query(): Collection
     {
-        $employees = Employee::with(['attendances' => function ($query){
-            $query->whereBetween('recorded_at',[Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->get();
+        $employees = Employee::with(['performances' => function ($query){
+            $query->whereBetween('created_at',[Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->get();
         }])->get();
 
         $index = 0;
@@ -36,16 +37,16 @@ class AttendancesExport implements FromQuery, WithMapping
             $data[$index]['employee_name'] = $employee->full_name;
             for($i=1;$i<=Carbon::now()->daysInMonth; $i++) {
                 $data[$index]['day'][$i] = $i;
-                $data[$index]['attendance'][$i] = !empty($employee->attendances?->filter(
+                $data[$index]['performance'][$i] = !empty($employee->performances?->filter(
                     function ($item) use ($i) {
-                        return false !== stripos((new Carbon($item->recorded_at))->toDateString(),
+                        return false !== stripos((new Carbon($item->created_at))->toDateString(),
                                 (new Carbon(Carbon::now()->year.'-'.Carbon::now()->month.'-'.$i))->toDateString());
                     })->first()) ?
-                    ($employee->attendances?->filter(
+                    ($employee->performances?->filter(
                         function ($item) use ($i) {
-                            return false !== stripos((new Carbon($item->recorded_at))->toDateString(),
+                            return false !== stripos((new Carbon($item->created_at))->toDateString(),
                                     (new Carbon(Carbon::now()->year.'-'.Carbon::now()->month.'-'.$i))->toDateString());
-                        })->first())?->status
+                        })->first())?->ratings
                     : '';
             }
             $index++;

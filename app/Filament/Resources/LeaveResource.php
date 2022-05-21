@@ -11,6 +11,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class LeaveResource extends Resource
 {
@@ -24,18 +25,26 @@ class LeaveResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('employee_id')
+                auth()->user()->hasRole('employee')?
+                    Forms\Components\Hidden::make('employee_id')
+                    ->default((Employee::firstWhere('user_id', auth()->user()->id))->id)
+                    ->label('employee')
+                    ->required():
+                    Forms\Components\Select::make('employee_id')
+                    ->label('employee')
                     ->options(Employee::all()->pluck('full_name','id'))
                     ->required(),
                 Forms\Components\Hidden::make('recorded_by')
                     ->default(auth()->user()->id)
                     ->required(),
                 Forms\Components\TextInput::make('credit_type')
+                    ->label('Duration Type')
                     ->numeric()
                     ->default(1)
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('credit_leaves')
+                    ->label('Duration Length')
                     ->required()
                     ->options([
                         'day' => 'Day',
@@ -49,14 +58,18 @@ class LeaveResource extends Resource
                 Forms\Components\DatePicker::make('to')
                     ->default(now())
                     ->required(),
-                Forms\Components\Select::make('status')
+                auth()->user()->hasRole('employee')?
+                    Forms\Components\Hidden::make('status')
                     ->required()
-                    ->default('pending')
-                    ->options([
-                        'pending' => 'Pending',
-                        'accepted' => 'Accepted',
-                        'rejected' => 'Rejected',
-                    ]),
+                    ->default('pending'):
+                    Forms\Components\Select::make('status')
+                        ->required()
+                        ->default('pending')
+                        ->options([
+                            'pending' => 'Pending',
+                            'accepted' => 'Accepted',
+                            'rejected' => 'Rejected',
+                        ]),
                 Forms\Components\Textarea::make('reason')
                     ->required()
                     ->maxLength(300),
@@ -70,8 +83,8 @@ class LeaveResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('employee.full_name')->searchable(),
                 Tables\Columns\TextColumn::make('user.name')->label('recorded by'),
-                Tables\Columns\TextColumn::make('credit_type'),
-                Tables\Columns\TextColumn::make('credit_leaves'),
+                Tables\Columns\TextColumn::make('credit_type')->label('Duration Type'),
+                Tables\Columns\TextColumn::make('credit_leaves')->label('Duration Length'),
                 Tables\Columns\TextColumn::make('from')
                     ->date(),
                 Tables\Columns\TextColumn::make('to')
@@ -106,5 +119,14 @@ class LeaveResource extends Resource
             'create' => Pages\CreateLeave::route('/create'),
             'edit' => Pages\EditLeave::route('/{record}/edit'),
         ];
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        if(auth()->user()->hasRole('employee')) {
+            return Leave::query()->where('employee_id', (Employee::firstWhere('user_id', auth()->user()->id))->id);
+        }
+
+        return Leave::query();
     }
 }

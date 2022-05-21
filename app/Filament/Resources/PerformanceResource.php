@@ -11,6 +11,8 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Illuminate\Database\Eloquent\Collection;
 
 class PerformanceResource extends Resource
 {
@@ -68,13 +70,19 @@ class PerformanceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('employee.full_name'),
+                Tables\Columns\TextColumn::make('employee.full_name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('year')
                     ->date(),
                 Tables\Columns\TextColumn::make('month'),
                 Tables\Columns\TextColumn::make('ratings'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
+            ])
+            ->pushBulkActions([
+                BulkAction::make('export')
+                    ->action(fn (Collection $records) => redirect(route('performance.download')))
+                    ->icon('heroicon-o-document-download')
+                    ->label('Export Data')
             ])
             ->filters([
                 //
@@ -87,6 +95,7 @@ class PerformanceResource extends Resource
             //
         ];
     }
+
 
     public static function getPages(): array
     {

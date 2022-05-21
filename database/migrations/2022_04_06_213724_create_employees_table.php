@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('reference_phone_2')->nullable();
             $table->string('marital_status');
             $table->text('comment');
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

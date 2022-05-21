@@ -40,6 +40,11 @@ class Employee extends Model implements HasMedia
         return $this->hasMany(Attendance::class);
     }
 
+    public function performances(): HasMany
+    {
+        return $this->hasMany(Performance::class);
+    }
+
     protected function fullName(): Attribute
     {
         return Attribute::make(

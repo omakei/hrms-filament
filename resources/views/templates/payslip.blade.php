@@ -89,49 +89,7 @@
             </tbody>
         </table>
         <br/>
-{{--        <table width="100%" style="border-spacing: 0;">--}}
-{{--            <tr>--}}
-{{--                <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;">On Going Examination: </td>--}}
-{{--                <td style="border:1px solid #000; text-align: center;padding: 4px;">{!! $data->patient_examination !!}</td>--}}
-{{--                <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;">On Going Treatment: </td>--}}
-{{--                <td style="border:1px solid #000; text-align: center;padding: 4px;">{!! $data->treatment_given !!}</td>--}}
-{{--            </tr>--}}
-{{--        </table>--}}
-{{--        <br/>--}}
-{{--        <table width="100%" style="border-spacing: 0;"> <thead>--}}
-{{--            <tr>--}}
-{{--                <th style="border:1px solid #000; text-align: center;padding: 4px;"  colspan="4">Diagnoses Information</th>--}}
-{{--            </tr>--}}
-{{--            </thead>--}}
-{{--            <tbody>--}}
-{{--            @foreach((\App\Models\PatientVisit::find($data->patient_visit_id))->diagnoses as $diagnosis)--}}
-{{--                <tr>--}}
-{{--                    <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;"> Diagnosis Name: </td>--}}
-{{--                    <td style="border:1px solid #000; text-align: center;padding: 4px;">{{ $diagnosis->i_c_d10_code->code }}</td>--}}
-{{--                    <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;">Diagnosis Type: </td>--}}
-{{--                    <td style="border:1px solid #000; text-align: center;padding: 4px;">{{ $diagnosis->type }}</td>--}}
-{{--                </tr>--}}
-{{--            @endforeach--}}
-{{--            </tbody>--}}
-{{--        </table>--}}
-{{--        <br/>--}}
-{{--        <table width="100%" style="border-spacing: 0;">--}}
-{{--            <thead>--}}
-{{--            <tr>--}}
-{{--                <th style="border:1px solid #000; text-align: center;padding: 4px;"  colspan="4">Investigations Information</th>--}}
-{{--            </tr>--}}
-{{--            </thead>--}}
-{{--            <tbody>--}}
-{{--            @foreach((\App\Models\PatientVisit::find($data->patient_visit_id))->investigations as $investigation)--}}
-{{--                <tr>--}}
-{{--                    <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;"> Investigation Name: </td>--}}
-{{--                    <td style="border:1px solid #000; text-align: center;padding: 4px;">{{ $investigation->laboratory_test->name }}</td>--}}
-{{--                    <td style="border:1px solid #000; font-weight: bold; text-align: center;padding: 4px;">Investigation Result: </td>--}}
-{{--                    <td style="border:1px solid #000; text-align: center;padding: 4px;">{!! $investigation->result !!}</td>--}}
-{{--                </tr>--}}
-{{--            @endforeach--}}
-{{--            </tbody>--}}
-{{--        </table>--}}
+
         <br/>
         <div>
             <h5> QR Code: </h5>
