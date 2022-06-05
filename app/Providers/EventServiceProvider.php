@@ -83,7 +83,7 @@ class EventServiceProvider extends ServiceProvider
             $paye = 128000 + ($taxable-1000000)*0.3;
         }
 
-        $tax = Deduction::firstWhere('name', 'PAYE');
+        $tax = Deduction::firstWhere('name', 'TAX');
 
         $nssf = Deduction::firstWhere('name', 'NSSF');
 
