@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Employee;
+use App\Models\PayScale;
+use App\Models\SalaryType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +20,9 @@ class EmployeeFinancialDetailsFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'employee_id' => Employee::factory(),
+            'salary_type_id' => (SalaryType::inRandomOrder()->frist())->id,
+            'pay_scale_id' => (PayScale::inRandomOrder()->frist())->id,
         ];
     }
 }
