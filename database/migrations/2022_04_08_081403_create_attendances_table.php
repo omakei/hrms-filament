@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('time_id')->nullable();
             $table->time('time_out')->nullable();
             $table->string('status');
+            $table->boolean('is_confirmed ')->default(false);
             $table->timestamp('recorded_at');
             $table->timestamps();
         });
